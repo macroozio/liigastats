@@ -31,7 +31,7 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional("categories", default=["points", "goals", "assists"]): vol.All(
                     cv.ensure_list, [cv.string]
                 ),
-                vol.Optional("top_n", default=10): cv.positive_int,
+                vol.Optional("top_n", default=5): cv.positive_int,
             }
         )
     },
@@ -72,7 +72,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Liiga Stats from a config entry."""
     url = entry.data["url"]
     categories = entry.data.get("categories", ["points", "goals", "assists"])
-    top_n = entry.data.get("top_n", 10)
+    top_n = entry.data.get("top_n", 5)
     
     coordinator = LiigaStatsDataUpdateCoordinator(
         hass, url=url, categories=categories, top_n=top_n
