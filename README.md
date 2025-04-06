@@ -1,0 +1,2 @@
+# liigastats
+Liigastats for HomeAssistant
