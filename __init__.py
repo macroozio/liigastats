@@ -11,7 +11,7 @@ import aiohttp
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigEntryNotReady
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
@@ -143,6 +143,12 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
                     return {}
                 
                 data = await resp.json()
+                
+                # Debug log to see the actual structure
+                _LOGGER.debug("API Response structure: %s", type(data))
+                if isinstance(data, dict):
+                    _LOGGER.debug("API Response keys: %s", data.keys())
+                
                 return self._process_data(data)
         except aiohttp.ClientError as err:
             _LOGGER.error("Error fetching data from Liiga API: %s", err)
@@ -194,12 +200,21 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
             "hits": "hits"
         }
         
-        # Get player data from the API response
-        # Based on the Liiga.fi structure
-        players = data.get("players", [])
+        # Handle different API response structures
+        players = []
+        
+        # First check if data is a dictionary (common API format)
+        if isinstance(data, dict):
+            players = data.get("players", [])
+        
+        # If data is a list (might be direct player list)
+        elif isinstance(data, list):
+            players = data
         
         if not players:
-            _LOGGER.warning("No player data found in API response")
+            _LOGGER.warning("No player data found in API response or unrecognized format")
+            # Debug the actual response structure
+            _LOGGER.debug("API Response type: %s", type(data))
             return result
         
         # Create leaderboards for each category
@@ -208,8 +223,11 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
                 api_field = category_mapping[category]
                 
                 # Sort players by the category
+                # Filter out players who don't have the required field
+                valid_players = [p for p in players if self._has_valid_field(p, api_field)]
+                
                 sorted_players = sorted(
-                    players, 
+                    valid_players, 
                     key=lambda x: self._safe_get_value(x, api_field),
                     reverse=True
                 )
@@ -236,6 +254,25 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
                 result[category] = top_players
         
         return result
+    
+    def _has_valid_field(self, player, field):
+        """Check if player has the field and it can be converted to a number."""
+        if field not in player:
+            return False
+            
+        value = player.get(field)
+        if value is None:
+            return False
+            
+        # Try to convert to float
+        try:
+            if isinstance(value, str):
+                float(value.replace(',', '.').replace('%', ''))
+            else:
+                float(value)
+            return True
+        except (ValueError, TypeError):
+            return False
     
     def _safe_get_value(self, player, field):
         """Safely get a numeric value from player data, with appropriate type conversion."""
