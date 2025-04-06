@@ -196,31 +196,28 @@ content: |
         {'id': 'xg', 'name': 'xG', 'sensor': 'sensor.liiga_expected_goals_leaders'}
       ] %}
       
-      {% set active_category = 'points' %}
-      {% set active_sensor = 'sensor.liiga_points_leaders' %}
+      {% set active_categories = ['points', 'goals'] %}
+      {% set active_sensors = ['sensor.liiga_points_leaders', 'sensor.liiga_goals_leaders'] %}
       
       {% for category in categories %}
         {% if states(category.sensor) != 'unknown' and states(category.sensor) != 'unavailable' %}
           <button 
-            class="category-btn {% if loop.first %}active{% endif %}" 
-            onclick="this.parentNode.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); this.classList.add('active'); document.getElementById('categoryTitle').innerText = '{{ category.name }} Leaders'; document.getElementById('leaderboardContainer_{{ category.id }}').style.display = 'block'; {% for other_cat in categories %}{% if other_cat.id != category.id %}document.getElementById('leaderboardContainer_{{ other_cat.id }}').style.display = 'none';{% endif %}{% endfor %}"
+            id="btn_{{ category.id }}"
+            class="category-btn {% if category.id == 'points' %}active{% endif %}"
+            onclick="rotateToCategory('{{ category.id }}');"
           >
             {{ category.name }}
           </button>
-          {% if loop.first %}
-            {% set active_category = category.id %}
-            {% set active_sensor = category.sensor %}
-          {% endif %}
         {% endif %}
       {% endfor %}
     </div>
     
-    <h2 class="liiga-leader-title" id="categoryTitle">{{ state_attr(active_sensor, 'category_name')|default('Points') }} Leaders</h2>
+    <h2 class="liiga-leader-title" id="categoryTitle">Points Leaders</h2>
     
     {% for category in categories %}
       {% set sensor_name = category.sensor %}
       {% if states(sensor_name) != 'unknown' and states(sensor_name) != 'unavailable' %}
-        <div id="leaderboardContainer_{{ category.id }}" style="display: {% if category.id == active_category %}block{% else %}none{% endif %};">
+        <div id="leaderboardContainer_{{ category.id }}" style="display: {% if category.id == 'points' %}block{% else %}none{% endif %};">
           <div class="liiga-leaders">
             {% set leaders = state_attr(sensor_name, 'leaders')|default([]) %}
             {% for leader in leaders[:5] %}
@@ -255,3 +252,59 @@ content: |
       {% endif %}
     {% endfor %}
   </div>
+
+  <script>
+    // Define the categories to rotate between
+    const rotatingCategories = ['points', 'goals'];
+    let currentIndex = 0;
+    let rotationInterval;
+    
+    // Function to rotate to a specific category
+    function rotateToCategory(categoryId) {
+      // Update buttons
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById('btn_' + categoryId).classList.add('active');
+      
+      // Update title
+      let categoryName = document.getElementById('btn_' + categoryId).innerText;
+      document.getElementById('categoryTitle').innerText = categoryName + ' Leaders';
+      
+      // Hide all containers and show the selected one
+      document.querySelectorAll('[id^="leaderboardContainer_"]').forEach(container => {
+        container.style.display = 'none';
+      });
+      document.getElementById('leaderboardContainer_' + categoryId).style.display = 'block';
+      
+      // If this was triggered by a click, update the current index
+      const clickedIndex = rotatingCategories.indexOf(categoryId);
+      if (clickedIndex !== -1) {
+        currentIndex = clickedIndex;
+      }
+    }
+    
+    // Function to automatically rotate categories
+    function startRotation() {
+      // Clear any existing interval
+      if (rotationInterval) {
+        clearInterval(rotationInterval);
+      }
+      
+      // Set new interval - 60000ms = 1 minute
+      rotationInterval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % rotatingCategories.length;
+        rotateToCategory(rotatingCategories[currentIndex]);
+      }, 60000);
+    }
+    
+    // Start rotation when the card loads
+    startRotation();
+    
+    // Make sure rotation restarts if the user manually selects a category
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        startRotation();
+      });
+    });
+  </script>
