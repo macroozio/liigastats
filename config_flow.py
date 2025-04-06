@@ -15,10 +15,13 @@ from . import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+DEFAULT_URL = "https://liiga.fi/api/v2/players/stats/summed/2025/2025/runkosarja/true?dataType=basicStats"
+DEFAULT_CATEGORIES = "points,goals,assists,plusminus,shots,shotpct"
+
 DATA_SCHEMA = vol.Schema(
     {
-        vol.Required("url", default="https://liiga.fi/api/v2/players/stats/2024/runkosarja"): str,
-        vol.Optional("categories", default="points,goals,assists"): str,
+        vol.Required("url", default=DEFAULT_URL): str,
+        vol.Optional("categories", default=DEFAULT_CATEGORIES): str,
         vol.Optional("top_n", default=10): int,
     }
 )

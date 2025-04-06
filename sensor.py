@@ -56,8 +56,14 @@ CATEGORY_CONFIG = {
     "toi": {
         "name": "Time on Ice",
         "icon": "mdi:timer-outline",
-        "value_suffix": "",
+        "value_suffix": " min",
         "precision": 0
+    },
+    "toiavg": {
+        "name": "Avg Time on Ice",
+        "icon": "mdi:timer-outline",
+        "value_suffix": " min",
+        "precision": 1
     },
     "shots": {
         "name": "Shots",
@@ -65,21 +71,45 @@ CATEGORY_CONFIG = {
         "value_suffix": "",
         "precision": 0
     },
+    "shotpct": {
+        "name": "Shot Percentage",
+        "icon": "mdi:target",
+        "value_suffix": "%",
+        "precision": 1
+    },
     "faceoffs": {
         "name": "Faceoff Win %",
         "icon": "mdi:percent",
         "value_suffix": "%",
         "precision": 1
     },
-    "blocks": {
-        "name": "Blocked Shots",
+    "xg": {
+        "name": "Expected Goals",
+        "icon": "mdi:chart-bell-curve",
+        "value_suffix": "",
+        "precision": 1
+    },
+    "xge": {
+        "name": "Expected Goals Effect",
+        "icon": "mdi:chart-line",
+        "value_suffix": "",
+        "precision": 1
+    },
+    "ppg": {
+        "name": "Power Play Goals",
+        "icon": "mdi:flash",
+        "value_suffix": "",
+        "precision": 0
+    },
+    "shg": {
+        "name": "Short-handed Goals",
         "icon": "mdi:shield",
         "value_suffix": "",
         "precision": 0
     },
-    "hits": {
-        "name": "Hits",
-        "icon": "mdi:flash",
+    "gwg": {
+        "name": "Game-Winning Goals",
+        "icon": "mdi:trophy",
         "value_suffix": "",
         "precision": 0
     }
@@ -161,7 +191,7 @@ class LiigaStatsLeaderboardSensor(CoordinatorEntity, SensorEntity):
         
         # Format leaderboard data
         formatted_leaders = []
-        for i, player in enumerate(leaders, 1):
+        for player in leaders:
             # Format the value according to category precision
             if self.precision == 0:
                 formatted_value = f"{int(player.get('value', 0))}{self.value_suffix}"
@@ -169,7 +199,7 @@ class LiigaStatsLeaderboardSensor(CoordinatorEntity, SensorEntity):
                 formatted_value = f"{player.get('value', 0):.{self.precision}f}{self.value_suffix}"
                 
             formatted_leaders.append({
-                "rank": i,
+                "rank": player.get("rank", 0),
                 "name": player.get("name", "Unknown"),
                 "team": player.get("team", "Unknown"),
                 "value": formatted_value,

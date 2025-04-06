@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Connect to Liiga Statistics API",
-        "description": "Set up Liiga Statistics integration",
+        "description": "Set up Liiga Statistics integration with new expanded stats. Available categories include: points, goals, assists, plusminus, penalties, games, toi, toiavg, shots, shotpct, faceoffs, xg, xge, ppg, shg, gwg",
         "data": {
           "url": "API URL",
           "categories": "Categories (comma separated)",

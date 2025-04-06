@@ -1,13 +1,13 @@
 # Liiga Statistics Integration for Home Assistant
 
-This custom integration creates leaderboards for Finnish Liiga hockey statistics in your Home Assistant instance.
+This custom integration creates leaderboards for Finnish Liiga hockey statistics in your Home Assistant instance. It uses the updated Liiga API for the 2025 season.
 
 ## Features
 
 - Player statistics leaderboards for various categories
 - Automatically updates from Liiga.fi API
 - Configurable number of players in each leaderboard
-- Multiple statistic categories supported
+- Multiple statistic categories supported including advanced stats
 - Player images for visual representation
 
 ## Installation
@@ -31,9 +31,8 @@ This custom integration creates leaderboards for Finnish Liiga hockey statistics
 
 ### Via UI
 
-1. Enter the URL to the Liiga API:
-   - For player stats: `https://liiga.fi/api/v2/players/stats/2024/runkosarja`
-   - For standings: `https://liiga.fi/api/v1/standings/2024`
+1. Enter the URL to the Liiga API (pre-filled with the new API endpoint):
+   - For player stats: `https://liiga.fi/api/v2/players/stats/summed/2025/2025/runkosarja/true?dataType=basicStats`
    
 2. Select which statistic categories you want to track (comma-separated):
    - `points` - Total points
@@ -42,11 +41,16 @@ This custom integration creates leaderboards for Finnish Liiga hockey statistics
    - `plusminus` - Plus/minus
    - `penalties` - Penalty minutes
    - `games` - Games played
-   - `toi` - Time on ice 
+   - `toi` - Total time on ice 
+   - `toiavg` - Average time on ice per game
    - `shots` - Shots
+   - `shotpct` - Shot percentage
    - `faceoffs` - Faceoff win percentage
-   - `blocks` - Blocked shots
-   - `hits` - Hits
+   - `xg` - Expected goals
+   - `xge` - Expected goals effect
+   - `ppg` - Power play goals
+   - `shg` - Shorthanded goals
+   - `gwg` - Game-winning goals
 
 3. Set how many players to show in each leaderboard (default: 10)
 
@@ -54,13 +58,14 @@ This custom integration creates leaderboards for Finnish Liiga hockey statistics
 
 ```yaml
 liigastats:
-  url: "https://liiga.fi/api/v2/players/stats/2024/runkosarja"
+  url: "https://liiga.fi/api/v2/players/stats/summed/2025/2025/runkosarja/true?dataType=basicStats"
   categories:
     - points
     - goals
     - assists
     - plusminus
-    - penalties
+    - shots
+    - xg
   top_n: 10
 ```
 
@@ -108,9 +113,19 @@ You can use custom cards like `grid` or `vertical-stack` with multiple `horizont
 
 ## Player Images
 
-The integration extracts player IDs from the API response and generates image URLs in the format:
+The integration extracts player image URLs from the API response in the format:
 ```
-https://liiga.fi/static/media/players/{player_id}.jpg
+https://liiga-backend-prod.s3.eu-north-1.amazonaws.com/2025/[teamId]/[playerId].png
 ```
 
 These images are included in the sensor attributes and can be used in your Lovelace cards.
+
+## Advanced Stats
+
+This updated version includes support for advanced statistics such as:
+
+- **Expected Goals (xG)**: A metric that estimates how many goals a player should have scored based on the quality of their shots
+- **Expected Goals Effect (xGE)**: The difference between actual goals and expected goals
+- **Shot Percentage**: The percentage of shots that result in goals
+- **Average Time on Ice**: The average amount of ice time per game
+- **Power Play and Shorthanded Goals**: Goals scored during special team situations
