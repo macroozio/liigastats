@@ -126,11 +126,16 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
         self.categories = categories
         self.top_n = top_n
         self.session = async_get_clientsession(hass)
+        self.last_update_success_time = None  # Add this line
 
     async def _async_update_data(self):
         """Fetch data from API."""
         try:
             return await self._fetch_data()
+            if data:
+                # On successful data fetch, update the timestamp
+                self.last_update_success_time = datetime.now()  # Set the last successful update time
+            return data
         except Exception as err:
             raise UpdateFailed(f"Error communicating with Liiga API: {err}")
 
@@ -157,7 +162,7 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
     def _extract_player_id(self, player):
         """Extract player ID from player data."""
         # First check if there's a direct ID field
-        player_id = player.get('id')
+        player_id = player.get('fiha_id')
         
         # If no direct ID, try to extract from links
         if not player_id:
@@ -240,14 +245,14 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
                     image_url = self._get_player_image_url(player_id, player.get('teamId'))
                     
                     top_players.append({
-                        "name": f"{player.get('firstName', '')} {player.get('lastName', '')}",
-                        "team": player.get('teamName', 'Unknown'),
+                        "name": player.get('full_name',''),
+                        "team": player.get('team', 'Unknown'),
                         "value": self._safe_get_value(player, api_field),
                         "games": player.get('games', 0),
-                        "position": player.get('position', ''),
-                        "number": player.get('jerseyNumber', ''),
+                        "position": player.get('current_position', ''),
+                        "number": player.get('current_jersey', ''),
                         "player_id": player_id,
-                        "image_url": image_url
+                        "image_url": player.get('image','')
                     })
                 
                 # Store in result
