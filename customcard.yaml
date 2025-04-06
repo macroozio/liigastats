@@ -1,5 +1,5 @@
 type: custom:html-template-card
-title: Liiga Points Leaders
+title: Liiga Statistics Leaders
 ignore_line_breaks: true
 content: |
   <style>
@@ -9,8 +9,35 @@ content: |
       margin: 0 auto;
     }
     
+    .category-selector {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .category-btn {
+      background-color: #f0f0f0;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .category-btn.active {
+      background-color: #2196F3;
+      color: white;
+    }
+    
+    .category-btn:hover:not(.active) {
+      background-color: #ddd;
+    }
+    
     .liiga-leader-title {
-      font-size: 18px;
+      font-size: 22px;
       font-weight: bold;
       margin-bottom: 15px;
       color: #333;
@@ -43,12 +70,6 @@ content: |
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-    
-    .leader-header .team-logo {
-      width: 20px;
-      height: 20px;
-      object-fit: contain;
     }
     
     .leader-header .player-number {
@@ -106,7 +127,15 @@ content: |
       margin: 0 5px;
     }
     
-    /* Team color indicators - Map team names to colors */
+    .last-updated {
+      text-align: right;
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+      font-style: italic;
+    }
+    
+    /* Team color indicators */
     .team-indicator {
       width: 100%;
       height: 5px;
@@ -156,55 +185,73 @@ content: |
   </style>
   
   <div class="liiga-leaders-container">
-    <div class="liiga-leaders">
-      {% set leaders = state_attr('sensor.liiga_points_leaders', 'leaders') %}
-      {% for leader in leaders[:5] %}
-        <div class="liiga-leader-card">
-          {% set team_class = leader.team|lower|replace(' ', '')|replace('-', '') %}
-          <div class="team-indicator {{ team_class if team_class in ['karpat', 'tappara', 'hifk', 'lukko', 'pelicans', 'ilves', 'hpk', 'jyp', 'kalpa', 'sport', 'tps', 'kookoo', 'saipa', 'assat', 'jukurit'] else 'default-team' }}"></div>
-          <div class="leader-header">
-            <span class="player-number">#{{ leader.number if leader.number else '?' }}</span>
-            <span>{{ leader.team }}</span>
-          </div>
-          <div class="leader-img-container">
-            {% if leader.image_url %}
-              <img class="leader-img" src="{{ leader.image_url }}" alt="{{ leader.name }}">
-            {% else %}
-              <img class="leader-img" src="/local/images/player-placeholder.png" onerror="this.src='/local/images/player-placeholder.png'" alt="{{ leader.name }}">
-            {% endif %}
-          </div>
-          <div class="leader-name">{{ leader.name }}</div>
-          <div class="leader-position">{{ leader.position }}</div>
-          <div class="leader-stats">{{ leader.value }}</div>
-          <div class="stats-breakdown">
-            <span>Games: {{ leader.games }}</span>
-          </div>
-        </div>
+    <!-- Category selector - dropdown or button group -->
+    <div class="category-selector">
+      {% set categories = [
+        {'id': 'points', 'name': 'Points', 'sensor': 'sensor.liiga_points_leaders'},
+        {'id': 'goals', 'name': 'Goals', 'sensor': 'sensor.liiga_goals_leaders'},
+        {'id': 'assists', 'name': 'Assists', 'sensor': 'sensor.liiga_assists_leaders'},
+        {'id': 'plusminus', 'name': 'Plus/Minus', 'sensor': 'sensor.liiga_plus_minus_leaders'},
+        {'id': 'shots', 'name': 'Shots', 'sensor': 'sensor.liiga_shots_leaders'},
+        {'id': 'xg', 'name': 'xG', 'sensor': 'sensor.liiga_expected_goals_leaders'}
+      ] %}
+      
+      {% set active_category = 'points' %}
+      {% set active_sensor = 'sensor.liiga_points_leaders' %}
+      
+      {% for category in categories %}
+        {% if states(category.sensor) != 'unknown' and states(category.sensor) != 'unavailable' %}
+          <button 
+            class="category-btn {% if loop.first %}active{% endif %}" 
+            onclick="this.parentNode.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); this.classList.add('active'); document.getElementById('categoryTitle').innerText = '{{ category.name }} Leaders'; document.getElementById('leaderboardContainer_{{ category.id }}').style.display = 'block'; {% for other_cat in categories %}{% if other_cat.id != category.id %}document.getElementById('leaderboardContainer_{{ other_cat.id }}').style.display = 'none';{% endif %}{% endfor %}"
+          >
+            {{ category.name }}
+          </button>
+          {% if loop.first %}
+            {% set active_category = category.id %}
+            {% set active_sensor = category.sensor %}
+          {% endif %}
+        {% endif %}
       {% endfor %}
     </div>
     
-    <div style="margin-top: 20px; overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-        <thead>
-          <tr style="background-color: #f3f3f3;">
-            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Rank</th>
-            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Player</th>
-            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Team</th>
-            <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">Value</th>
-            <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ddd;">Games</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for leader in leaders[5:] %}
-            <tr>
-              <td style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">{{ leader.rank }}</td>
-              <td style="padding: 8px; text-align: left; border-bottom: 1px solid #eee; font-weight: 500;">{{ leader.name }}</td>
-              <td style="padding: 8px; text-align: left; border-bottom: 1px solid #eee;">{{ leader.team }}</td>
-              <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">{{ leader.value }}</td>
-              <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">{{ leader.games }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <h2 class="liiga-leader-title" id="categoryTitle">{{ state_attr(active_sensor, 'category_name')|default('Points') }} Leaders</h2>
+    
+    {% for category in categories %}
+      {% set sensor_name = category.sensor %}
+      {% if states(sensor_name) != 'unknown' and states(sensor_name) != 'unavailable' %}
+        <div id="leaderboardContainer_{{ category.id }}" style="display: {% if category.id == active_category %}block{% else %}none{% endif %};">
+          <div class="liiga-leaders">
+            {% set leaders = state_attr(sensor_name, 'leaders')|default([]) %}
+            {% for leader in leaders[:5] %}
+              <div class="liiga-leader-card">
+                {% set team_class = leader.team|lower|replace(' ', '')|replace('-', '') %}
+                <div class="team-indicator {{ team_class if team_class in ['karpat', 'tappara', 'hifk', 'lukko', 'pelicans', 'ilves', 'hpk', 'jyp', 'kalpa', 'sport', 'tps', 'kookoo', 'saipa', 'assat', 'jukurit'] else 'default-team' }}"></div>
+                <div class="leader-header">
+                  <span class="player-number">#{{ leader.number if leader.number else '?' }}</span>
+                  <span>{{ leader.team }}</span>
+                </div>
+                <div class="leader-img-container">
+                  {% if leader.image_url %}
+                    <img class="leader-img" src="{{ leader.image_url }}" alt="{{ leader.name }}" onerror="this.src='/local/images/player-placeholder.png'">
+                  {% else %}
+                    <img class="leader-img" src="/local/images/player-placeholder.png" alt="{{ leader.name }}">
+                  {% endif %}
+                </div>
+                <div class="leader-name">{{ leader.name }}</div>
+                <div class="leader-position">{{ leader.position }}</div>
+                <div class="leader-stats">{{ leader.value }}</div>
+                <div class="stats-breakdown">
+                  <span>Games: {{ leader.games }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          
+          <div class="last-updated">
+            Last updated: {{ state_attr(sensor_name, 'last_updated')|default('Unknown') }}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
   </div>
