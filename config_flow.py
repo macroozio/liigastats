@@ -11,17 +11,19 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from . import DOMAIN
+from . import DOMAIN, DEFAULT_PLAYERS_URL, DEFAULT_GOALIES_URL
 
 _LOGGER = logging.getLogger(__name__)
 
-DEFAULT_URL = "https://liiga.fi/api/v2/players/stats/summed/2025/2025/runkosarja/true?dataType=basicStats"
 DEFAULT_CATEGORIES = "points,goals,assists,plusminus,shots,shotpct"
+DEFAULT_GOALIE_CATEGORIES = "wins,savepct,gaa,shutouts"
 
 DATA_SCHEMA = vol.Schema(
     {
-        vol.Required("url", default=DEFAULT_URL): str,
+        vol.Required("url", default=DEFAULT_PLAYERS_URL): str,
+        vol.Required("goalie_url", default=DEFAULT_GOALIES_URL): str,
         vol.Optional("categories", default=DEFAULT_CATEGORIES): str,
+        vol.Optional("goalie_categories", default=DEFAULT_GOALIE_CATEGORIES): str,
         vol.Optional("top_n", default=10): int,
     }
 )
@@ -30,18 +32,33 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict:
     """Validate the user input allows us to connect."""
     session = async_get_clientsession(hass)
     
+    # Check player stats API
     try:
         async with session.get(data["url"]) as resp:
             if resp.status != 200:
-                raise CannotConnect(f"Invalid response from API: {resp.status}")
+                raise CannotConnect(f"Invalid response from player API: {resp.status}")
             
             # Try to parse JSON
             await resp.json()
             
     except aiohttp.ClientError as err:
-        raise CannotConnect(f"Error connecting: {err}")
+        raise CannotConnect(f"Error connecting to player API: {err}")
     except ValueError:
-        raise InvalidData("Invalid JSON data returned from API")
+        raise InvalidData("Invalid JSON data returned from player API")
+    
+    # Check goalie stats API
+    try:
+        async with session.get(data["goalie_url"]) as resp:
+            if resp.status != 200:
+                raise CannotConnect(f"Invalid response from goalie API: {resp.status}")
+            
+            # Try to parse JSON
+            await resp.json()
+            
+    except aiohttp.ClientError as err:
+        raise CannotConnect(f"Error connecting to goalie API: {err}")
+    except ValueError:
+        raise InvalidData("Invalid JSON data returned from goalie API")
     
     # Return info to be stored in the config entry
     return {"title": "Liiga Stats"}
@@ -65,6 +82,10 @@ class LiigaStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 # Process categories from comma-separated string to list
                 categories = [c.strip() for c in user_input["categories"].split(",")]
                 user_input["categories"] = categories
+                
+                # Process goalie categories from comma-separated string to list
+                goalie_categories = [c.strip() for c in user_input["goalie_categories"].split(",")]
+                user_input["goalie_categories"] = goalie_categories
                 
                 return self.async_create_entry(title=info["title"], data=user_input)
             
