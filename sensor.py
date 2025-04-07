@@ -17,6 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # Category-specific formatting and icons
 CATEGORY_CONFIG = {
+    # Player stats
     "points": {
         "name": "Points",
         "icon": "mdi:scoreboard",
@@ -112,6 +113,62 @@ CATEGORY_CONFIG = {
         "icon": "mdi:trophy",
         "value_suffix": "",
         "precision": 0
+    },
+    
+    # Goalie stats
+    "goalie_wins": {
+        "name": "Goalie Wins",
+        "icon": "mdi:medal",
+        "value_suffix": "",
+        "precision": 0
+    },
+    "goalie_losses": {
+        "name": "Goalie Losses",
+        "icon": "mdi:close-circle",
+        "value_suffix": "",
+        "precision": 0
+    },
+    "goalie_savepct": {
+        "name": "Save Percentage",
+        "icon": "mdi:shield-check",
+        "value_suffix": "%",
+        "precision": 1
+    },
+    "goalie_gaa": {
+        "name": "Goals Against Average",
+        "icon": "mdi:hockey-puck",
+        "value_suffix": "",
+        "precision": 2
+    },
+    "goalie_shutouts": {
+        "name": "Shutouts",
+        "icon": "mdi:shield-lock",
+        "value_suffix": "",
+        "precision": 0
+    },
+    "goalie_games": {
+        "name": "Goalie Games",
+        "icon": "mdi:calendar-check",
+        "value_suffix": "",
+        "precision": 0
+    },
+    "goalie_toi": {
+        "name": "Goalie Time on Ice",
+        "icon": "mdi:timer-outline",
+        "value_suffix": " min",
+        "precision": 0
+    },
+    "goalie_saves": {
+        "name": "Saves",
+        "icon": "mdi:shield-check",
+        "value_suffix": "",
+        "precision": 0
+    },
+    "goalie_goals_against": {
+        "name": "Goals Against",
+        "icon": "mdi:hockey-puck",
+        "value_suffix": "",
+        "precision": 0
     }
 }
 
@@ -125,8 +182,13 @@ async def async_setup_platform(
     coordinator = hass.data[DOMAIN]["coordinator"]
     
     sensors = []
+    # Add player stat sensors
     for category in coordinator.categories:
         sensors.append(LiigaStatsLeaderboardSensor(coordinator, category))
+    
+    # Add goalie stat sensors
+    for category in coordinator.goalie_categories:
+        sensors.append(LiigaStatsLeaderboardSensor(coordinator, f"goalie_{category}"))
     
     async_add_entities(sensors, True)
 
@@ -139,8 +201,13 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     
     sensors = []
+    # Add player stat sensors
     for category in coordinator.categories:
         sensors.append(LiigaStatsLeaderboardSensor(coordinator, category))
+    
+    # Add goalie stat sensors
+    for category in coordinator.goalie_categories:
+        sensors.append(LiigaStatsLeaderboardSensor(coordinator, f"goalie_{category}"))
     
     async_add_entities(sensors, True)
 
@@ -156,13 +223,21 @@ class LiigaStatsLeaderboardSensor(CoordinatorEntity, SensorEntity):
         
         # Get category config or use defaults
         category_config = CATEGORY_CONFIG.get(category, {
-            "name": category.capitalize(),
+            "name": category.replace('goalie_', '').capitalize(),
             "icon": "mdi:hockey-sticks",
             "value_suffix": "",
             "precision": 0
         })
         
-        self._attr_name = f"Liiga {category_config['name']} Leaders"
+        # Determine if this is a goalie stat
+        self.is_goalie = category.startswith('goalie_')
+        
+        # Format the name accordingly
+        if self.is_goalie:
+            self._attr_name = f"Liiga {category_config['name']} Leaders"
+        else:
+            self._attr_name = f"Liiga {category_config['name']} Leaders"
+            
         self._attr_unique_id = f"liigastats_{category}_leaderboard"
         self._attr_icon = category_config["icon"]
         self.value_suffix = category_config["value_suffix"]
@@ -212,10 +287,16 @@ class LiigaStatsLeaderboardSensor(CoordinatorEntity, SensorEntity):
         # Extract image URL for the leader (for convenient access)
         leader_image_url = leaders[0].get("image_url", "") if leaders else ""
         
+        # Get proper category name
+        category_display = CATEGORY_CONFIG.get(self.category, {}).get(
+            "name", self.category.replace('goalie_', '').capitalize()
+        )
+        
         return {
             "leaders": formatted_leaders,
             "last_updated": self.coordinator.last_update_success_time.isoformat() if self.coordinator.last_update_success_time else None,
-            "category": self.category,
-            "category_name": CATEGORY_CONFIG.get(self.category, {}).get("name", self.category.capitalize()),
-            "leader_image_url": leader_image_url
+            "category": self.category.replace('goalie_', '') if self.is_goalie else self.category,
+            "category_name": category_display,
+            "leader_image_url": leader_image_url,
+            "is_goalie_stat": self.is_goalie
         }
