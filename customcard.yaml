@@ -11,33 +11,6 @@ content: |
       margin: 0 auto;
     }
     
-    .category-selector {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    
-    .category-btn {
-      background-color: #f0f0f0;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-    
-    .category-btn.active {
-      background-color: #2196F3;
-      color: white;
-    }
-    
-    .category-btn:hover:not(.active) {
-      background-color: #ddd;
-    }
-    
     .liiga-leader-title {
       font-size: 22px;
       font-weight: bold;
@@ -187,47 +160,26 @@ content: |
   </style>
   
   <div class="liiga-leaders-container">
-    <!-- Category selector - dropdown or button group -->
-    <div class="category-selector">
-      {% set categories = [
-        {'id': 'points', 'name': 'Points', 'sensor': 'sensor.liiga_points_leaders'},
-        {'id': 'goals', 'name': 'Goals', 'sensor': 'sensor.liiga_goals_leaders'},
-        {'id': 'assists', 'name': 'Assists', 'sensor': 'sensor.liiga_assists_leaders'},
-        {'id': 'plusminus', 'name': 'Plus/Minus', 'sensor': 'sensor.liiga_plus_minus_leaders'},
-        {'id': 'shots', 'name': 'Shots', 'sensor': 'sensor.liiga_shots_leaders'},
-        {'id': 'xg', 'name': 'xG', 'sensor': 'sensor.liiga_expected_goals_leaders'}
-      ] %}
-      
-      {% set rotation_categories = ['points', 'goals'] %}
-      
-      {# Determine which category to display based on current minute #}
-      {% set current_minute = now().minute %}
-      {% set display_index = current_minute % 2 %}
-      {% set active_category = rotation_categories[display_index] %}
-      
-      {% for category in categories %}
-        {% if states(category.sensor) != 'unknown' and states(category.sensor) != 'unavailable' %}
-          <button 
-            class="category-btn {% if category.id == active_category %}active{% endif %}"
-          >
-            {{ category.name }}
-          </button>
-        {% endif %}
-      {% endfor %}
-    </div>
+    {% set categories = [
+      {'id': 'points', 'name': 'Points Leaders', 'sensor': 'sensor.liiga_points_leaders', 'player_type': 'skater'},
+      {'id': 'goals', 'name': 'Goals Leaders', 'sensor': 'sensor.liiga_goals_leaders', 'player_type': 'skater'},
+      {'id': 'goalie_savepct', 'name': 'Save Percentage Leaders', 'sensor': 'sensor.liiga_save_percentage_leaders', 'player_type': 'goalie'},
+      {'id': 'goalie_gaa', 'name': 'Goals Against Average Leaders', 'sensor': 'sensor.liiga_goals_against_average_leaders', 'player_type': 'goalie'}
+    ] %}
+    
+    {# Determine which category to display based on current minute #}
+    {% set current_minute = now().minute %}
+    {% set display_index = current_minute % 4 %}
+    {% set active_category = categories[display_index] %}
     
     <h2 class="liiga-leader-title">
-      {% if active_category == 'points' %}
-        Points Leaders
-      {% elif active_category == 'goals' %}
-        Goals Leaders
-      {% endif %}
+      {{ active_category.name }}
     </h2>
     
     {% for category in categories %}
       {% set sensor_name = category.sensor %}
       {% if states(sensor_name) != 'unknown' and states(sensor_name) != 'unavailable' %}
-        <div style="display: {% if category.id == active_category %}block{% else %}none{% endif %};">
+        <div style="display: {% if category.id == active_category.id %}block{% else %}none{% endif %};">
           <div class="liiga-leaders">
             {% set leaders = state_attr(sensor_name, 'leaders')|default([]) %}
             {% for leader in leaders[:5] %}
@@ -256,7 +208,12 @@ content: |
           </div>
           
           <div class="last-updated">
-            Last updated: {{ state_attr(sensor_name, 'last_updated')|default('Unknown') }}
+            {% set last_updated = state_attr(sensor_name, 'last_updated')|default(none) %}
+            {% if last_updated %}
+              Last updated: {{ last_updated|timestamp_custom('%Y-%m-%d %H:%M') }}
+            {% else %}
+              Last updated: Unknown
+            {% endif %}
           </div>
         </div>
       {% endif %}
