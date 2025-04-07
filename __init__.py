@@ -22,13 +22,21 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = "liigastats"
 SCAN_INTERVAL = timedelta(hours=1)  # Update hourly - Liiga stats don't change that often
 
+# Default endpoints for player and goalie stats
+DEFAULT_PLAYERS_URL = "https://liiga.fi/api/v2/players/stats/summed/2025/2025/runkosarja/true?dataType=basicStats"
+DEFAULT_GOALIES_URL = "https://liiga.fi/api/v2/players/stats/summed/2025/2025/runkosarja/true?dataType=basicStatsGk"
+
 # Configuration schema for configuration.yaml
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {
-                vol.Required("url"): cv.string,
+                vol.Required("url", default=DEFAULT_PLAYERS_URL): cv.string,
+                vol.Optional("goalie_url", default=DEFAULT_GOALIES_URL): cv.string,
                 vol.Optional("categories", default=["points", "goals", "assists"]): vol.All(
+                    cv.ensure_list, [cv.string]
+                ),
+                vol.Optional("goalie_categories", default=["wins", "savepct", "gaa", "shutouts"]): vol.All(
                     cv.ensure_list, [cv.string]
                 ),
                 vol.Optional("top_n", default=5): cv.positive_int,
@@ -48,11 +56,14 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     hass.data[DOMAIN] = {}
     
     url = config[DOMAIN]["url"]
+    goalie_url = config[DOMAIN].get("goalie_url", DEFAULT_GOALIES_URL)
     categories = config[DOMAIN]["categories"]
+    goalie_categories = config[DOMAIN].get("goalie_categories", ["wins", "savepct", "gaa", "shutouts"])
     top_n = config[DOMAIN]["top_n"]
     
     coordinator = LiigaStatsDataUpdateCoordinator(
-        hass, url=url, categories=categories, top_n=top_n
+        hass, url=url, goalie_url=goalie_url, 
+        categories=categories, goalie_categories=goalie_categories, top_n=top_n
     )
     
     await coordinator.async_refresh()
@@ -71,11 +82,14 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Liiga Stats from a config entry."""
     url = entry.data["url"]
+    goalie_url = entry.data.get("goalie_url", DEFAULT_GOALIES_URL)
     categories = entry.data.get("categories", ["points", "goals", "assists"])
+    goalie_categories = entry.data.get("goalie_categories", ["wins", "savepct", "gaa", "shutouts"])
     top_n = entry.data.get("top_n", 5)
     
     coordinator = LiigaStatsDataUpdateCoordinator(
-        hass, url=url, categories=categories, top_n=top_n
+        hass, url=url, goalie_url=goalie_url,
+        categories=categories, goalie_categories=goalie_categories, top_n=top_n
     )
     
     await coordinator.async_refresh()
@@ -113,7 +127,8 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Finnish Hockey data from Liiga.fi API."""
 
     def __init__(
-        self, hass: HomeAssistant, url: str, categories: list[str], top_n: int
+        self, hass: HomeAssistant, url: str, goalie_url: str,
+        categories: list[str], goalie_categories: list[str], top_n: int
     ) -> None:
         """Initialize the coordinator."""
         super().__init__(
@@ -123,7 +138,9 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=SCAN_INTERVAL,
         )
         self.url = url
+        self.goalie_url = goalie_url
         self.categories = categories
+        self.goalie_categories = goalie_categories
         self.top_n = top_n
         self.session = async_get_clientsession(hass)
         self.last_update_success_time = None
@@ -131,7 +148,13 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from API."""
         try:
-            data = await self._fetch_data()
+            # Fetch both player and goalie data
+            player_data = await self._fetch_data(self.url, is_goalie=False)
+            goalie_data = await self._fetch_data(self.goalie_url, is_goalie=True)
+            
+            # Merge the results
+            data = {**player_data, **goalie_data}
+            
             if data:
                 # On successful data fetch, update the timestamp
                 self.last_update_success_time = datetime.now()
@@ -139,10 +162,10 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
         except Exception as err:
             raise UpdateFailed(f"Error communicating with Liiga API: {err}")
 
-    async def _fetch_data(self):
+    async def _fetch_data(self, url, is_goalie=False):
         """Fetch the actual data from Liiga.fi API."""
         try:
-            async with self.session.get(self.url) as resp:
+            async with self.session.get(url) as resp:
                 if resp.status != 200:
                     _LOGGER.error("Liiga API returned status %s", resp.status)
                     return {}
@@ -154,17 +177,17 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
                 if isinstance(data, dict):
                     _LOGGER.debug("API Response keys: %s", data.keys())
                 
-                return self._process_data(data)
+                return self._process_data(data, is_goalie)
         except aiohttp.ClientError as err:
             _LOGGER.error("Error fetching data from Liiga API: %s", err)
             return {}
 
-    def _process_data(self, data):
-        """Process the fetched data into leaderboards based on the new Liiga.fi API structure."""
+    def _process_data(self, data, is_goalie=False):
+        """Process the fetched data into leaderboards."""
         result = {}
         
         # Map of our category names to API field names
-        category_mapping = {
+        player_category_mapping = {
             "points": "points",
             "goals": "goals",
             "assists": "assists",
@@ -183,6 +206,22 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
             "gwg": "winningGoals"
         }
         
+        goalie_category_mapping = {
+            "wins": "wins",
+            "losses": "losses",
+            "savepct": "savePercentage",
+            "gaa": "goalsAgainst",
+            "shutouts": "shutouts",
+            "games": "games",
+            "toi": "timeOnIce",
+            "saves": "saves",
+            "goals_against": "goalsAgainstCount"
+        }
+        
+        # Choose appropriate category mapping
+        category_mapping = goalie_category_mapping if is_goalie else player_category_mapping
+        categories = self.goalie_categories if is_goalie else self.categories
+        
         # Handle different API response structures
         players = []
         
@@ -199,23 +238,28 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("API Response type: %s", type(data))
             return result
         
+        # For goalie stats, filter to include only goalkeepers
+        if is_goalie:
+            players = [p for p in players if p.get("goalkeeper", False) is True]
+        
         # Create leaderboards for each category
-        for category in self.categories:
+        for category in categories:
             if category in category_mapping:
                 api_field = category_mapping[category]
                 
-                # Filter out players who don't have the required field or are goalkeepers if relevant
+                # Filter out players who don't have the required field
                 valid_players = [p for p in players if self._has_valid_field(p, api_field)]
                 
-                # For field player stats, filter out goalkeepers
-                if category not in ["toi", "toiavg", "games"]:
-                    valid_players = [p for p in valid_players if p.get("goalkeeper", True) is False]
+                # Handle sorting direction (ascending for GAA, descending for others)
+                reverse_sort = True
+                if category == "gaa":
+                    reverse_sort = False
                 
                 # Sort players by the category
                 sorted_players = sorted(
                     valid_players, 
                     key=lambda x: self._safe_get_value(x, api_field),
-                    reverse=True
+                    reverse=reverse_sort
                 )
                 
                 # Take top N players
@@ -236,8 +280,9 @@ class LiigaStatsDataUpdateCoordinator(DataUpdateCoordinator):
                         "image_url": player.get('pictureUrl', '')
                     })
                 
-                # Store in result
-                result[category] = top_players
+                # Store in result with prefix for goalie categories to avoid conflicts
+                result_key = f"goalie_{category}" if is_goalie else category
+                result[result_key] = top_players
         
         return result
     
