@@ -328,7 +328,7 @@ cards:
         .default-team { background: #333; }
         @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
       </style>
-      {% set sensor = 'sensor.liiga_power_play_goals_leaders' %}
+      {% set sensor = 'sensor.liiga_player_power_play_goals_leaders' %}
       {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
       {% set team_map = {
         'Kärpät':'karpat','Ässät':'assat','K-Espoo':'kespoo','Jukurit':'jukurit',
