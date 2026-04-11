@@ -140,7 +140,7 @@ class LiigaPlayerStatsDataUpdateCoordinator(DataUpdateCoordinator):
             "goals": "goals",
             "assists": "assists",
             "plusminus": "plusMinus",
-            "powerplaygoals": "ppGoals",
+            "powerplaygoals": "powerplayGoals",
             "shots": "shots",
             "shotpercentage": "shotPercentage",
             "xge": "xge",
