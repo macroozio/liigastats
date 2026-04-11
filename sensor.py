@@ -111,7 +111,7 @@ class LiigaPlayerStatsLeaderboardSensor(CoordinatorEntity, SensorEntity):
             "precision": 0
         })
 
-        self._attr_name = f"Liiga Player {category_config['name']} Leaders"
+        self._attr_name = f"Liiga {category_config['name']} Leaders"
         self._attr_unique_id = f"liigastats_{category}_leaderboard"
         self._attr_icon = category_config["icon"]
         self.value_suffix = category_config["value_suffix"]
