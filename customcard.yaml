@@ -3,367 +3,363 @@ enable_auto_swipe: true
 auto_swipe_interval: 10000
 loop_mode: infinite
 cards:
+
+  # ── Slide 1: Points ──────────────────────────────────────────────────────
   - type: custom:html-template-card
+    title: Points Leaders
     ignore_line_breaks: true
-    content: >
-      {% set sensor = states.sensor.liiga_points_leaders %}
-      {% set leaders = sensor.attributes.leaders if sensor else [] %}
-      {% set team_map = {
-        'Kärpät': 'karpat',
-        'Tappara': 'tappara',
-        'HIFK': 'hifk',
-        'Lukko': 'lukko',
-        'Pelicans': 'pelicans',
-        'Ilves': 'ilves',
-        'HPK': 'hpk',
-        'JYP': 'jyp',
-        'KalPa': 'kalpa',
-        'Sport': 'sport',
-        'TPS': 'tps',
-        'KooKoo': 'kookoo',
-        'SaiPa': 'saipa',
-        'Ässät': 'assat',
-        'Jukurit': 'jukurit',
-        'Kespoo': 'kespoo'
-      } %}
+    content: |
       <style>
-        .ls-wrap { font-family: sans-serif; padding: 8px; }
-        .ls-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-text-color); }
-        .ls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
-        .ls-card { min-width: 0; background: #fff; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-        .ls-rank { font-size: 13px; color: #888; margin-bottom: 2px; }
-        .ls-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 4px auto; display: block; background: #eee; }
-        .ls-name { font-size: 15px; font-weight: bold; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ls-team { font-size: 12px; font-weight: bold; border-radius: 4px; padding: 2px 6px; display: inline-block; margin: 3px 0; }
-        .ls-stat { font-size: 28px; font-weight: bold; }
-        .ls-gp { font-size: 15px; color: #555; }
-        .ls-gap { font-size: 14px; color: #444; margin-top: 2px; }
-        .ls-pos { font-size: 12px; color: #888; }
-        .karpat { background: #009345; color: #fff; }
-        .tappara { background: #0066B1; color: #fff; }
-        .hifk { background: #E31E24; color: #fff; }
-        .lukko { background: #0072CE; color: #fff; }
-        .pelicans { background: #009FDF; color: #fff; }
-        .ilves { background: #FFDD00; color: #000; }
-        .hpk { background: #FF6600; color: #fff; }
-        .jyp { background: #000000; color: #fff; }
-        .kalpa { background: #FFDD00; color: #000; }
-        .sport { background: #E31937; color: #fff; }
-        .tps { background: #000000; color: #fff; }
-        .kookoo { background: #F7AF1D; color: #000; }
-        .saipa { background: #FFDD00; color: #000; }
-        .assat { background: #e4021b; color: #fff; }
-        .jukurit { background: #00B0CA; color: #fff; }
-        .kespoo { background: #003580; color: #fff; }
-        .unknown { background: #888; color: #fff; }
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: #fff; border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.1); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 5px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 14px; }
+        .lg-number { font-weight: bold; font-size: 16px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: #eee; overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 16px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1a1a1a; }
+        .lg-pos { text-align: center; color: #888; font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: #1a1a1a; }
+        .lg-gp { text-align: center; color: #666; font-size: 15px; }
+        .lg-record { text-align: center; color: #444; font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
       </style>
-      <div class="ls-wrap">
-        <div class="ls-title">Points Leaders</div>
-        <div class="ls-grid">
+      {% set sensor = 'sensor.liiga_points_leaders' %}
+      {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
+      {% set team_map = {
+        'Kärpät':'karpat','Ässät':'assat','K-Espoo':'kespoo','Jukurit':'jukurit',
+        'Tappara':'tappara','HIFK':'hifk','Lukko':'lukko','Pelicans':'pelicans',
+        'Ilves':'ilves','HPK':'hpk','JYP':'jyp','KalPa':'kalpa','Sport':'sport',
+        'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
+      } %}
+      <div class="lg-container">
+        <div class="lg-title">Points Leaders</div>
+        <div class="lg-cards">
           {% for p in leaders %}
-          {% set tc = team_map.get(p.team, 'unknown') %}
-          <div class="ls-card">
-            <div class="ls-rank">#{{ p.rank }}</div>
-            {% if p.image_url %}<img class="ls-img" src="{{ p.image_url }}" alt="{{ p.name }}" onerror="this.style.display='none'">{% endif %}
-            <div class="ls-name">{{ p.name }}</div>
-            <span class="ls-team {{ tc }}">{{ p.team }}</span>
-            <div class="ls-stat">{{ p.value }}</div>
-            <div class="ls-gp">{{ p.games }} GP</div>
-            <div class="ls-gap">{{ p.gap }}</div>
-            <div class="ls-pos">{{ p.position }}</div>
-          </div>
+            {% set tc = team_map.get(p.team, 'default-team') %}
+            <div class="lg-card">
+              <div class="lg-team-bar {{ tc }}"></div>
+              <div class="lg-header">
+                <span class="lg-number">#{{ p.number if p.number else '?' }}</span>
+                <span>{{ p.team }}</span>
+              </div>
+              <div class="lg-img-wrap">
+                {% if p.image_url %}
+                  <img class="lg-img" src="{{ p.image_url }}" alt="{{ p.name }}"
+                       onerror="this.style.display='none';this.parentNode.style.background='#ccc'">
+                {% endif %}
+              </div>
+              <div class="lg-name">{{ p.name }}</div>
+              <div class="lg-pos">{{ p.position }}</div>
+              <div class="lg-stat">{{ p.value }}</div>
+              <div class="lg-gp">GP: {{ p.games }}</div>
+              <div class="lg-record">{{ p.gap }}</div>
+            </div>
           {% endfor %}
         </div>
+        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
       </div>
 
+  # ── Slide 2: Goals ───────────────────────────────────────────────────────
   - type: custom:html-template-card
+    title: Goals Leaders
     ignore_line_breaks: true
-    content: >
-      {% set sensor = states.sensor.liiga_goals_leaders %}
-      {% set leaders = sensor.attributes.leaders if sensor else [] %}
-      {% set team_map = {
-        'Kärpät': 'karpat',
-        'Tappara': 'tappara',
-        'HIFK': 'hifk',
-        'Lukko': 'lukko',
-        'Pelicans': 'pelicans',
-        'Ilves': 'ilves',
-        'HPK': 'hpk',
-        'JYP': 'jyp',
-        'KalPa': 'kalpa',
-        'Sport': 'sport',
-        'TPS': 'tps',
-        'KooKoo': 'kookoo',
-        'SaiPa': 'saipa',
-        'Ässät': 'assat',
-        'Jukurit': 'jukurit',
-        'Kespoo': 'kespoo'
-      } %}
+    content: |
       <style>
-        .ls-wrap { font-family: sans-serif; padding: 8px; }
-        .ls-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-text-color); }
-        .ls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
-        .ls-card { min-width: 0; background: #fff; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-        .ls-rank { font-size: 13px; color: #888; margin-bottom: 2px; }
-        .ls-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 4px auto; display: block; background: #eee; }
-        .ls-name { font-size: 15px; font-weight: bold; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ls-team { font-size: 12px; font-weight: bold; border-radius: 4px; padding: 2px 6px; display: inline-block; margin: 3px 0; }
-        .ls-stat { font-size: 28px; font-weight: bold; }
-        .ls-gp { font-size: 15px; color: #555; }
-        .ls-gap { font-size: 14px; color: #444; margin-top: 2px; }
-        .ls-pos { font-size: 12px; color: #888; }
-        .karpat { background: #009345; color: #fff; }
-        .tappara { background: #0066B1; color: #fff; }
-        .hifk { background: #E31E24; color: #fff; }
-        .lukko { background: #0072CE; color: #fff; }
-        .pelicans { background: #009FDF; color: #fff; }
-        .ilves { background: #FFDD00; color: #000; }
-        .hpk { background: #FF6600; color: #fff; }
-        .jyp { background: #000000; color: #fff; }
-        .kalpa { background: #FFDD00; color: #000; }
-        .sport { background: #E31937; color: #fff; }
-        .tps { background: #000000; color: #fff; }
-        .kookoo { background: #F7AF1D; color: #000; }
-        .saipa { background: #FFDD00; color: #000; }
-        .assat { background: #e4021b; color: #fff; }
-        .jukurit { background: #00B0CA; color: #fff; }
-        .kespoo { background: #003580; color: #fff; }
-        .unknown { background: #888; color: #fff; }
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: #fff; border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.1); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 5px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 14px; }
+        .lg-number { font-weight: bold; font-size: 16px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: #eee; overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 16px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1a1a1a; }
+        .lg-pos { text-align: center; color: #888; font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: #1a1a1a; }
+        .lg-gp { text-align: center; color: #666; font-size: 15px; }
+        .lg-record { text-align: center; color: #444; font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
       </style>
-      <div class="ls-wrap">
-        <div class="ls-title">Goals Leaders</div>
-        <div class="ls-grid">
+      {% set sensor = 'sensor.liiga_goals_leaders' %}
+      {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
+      {% set team_map = {
+        'Kärpät':'karpat','Ässät':'assat','K-Espoo':'kespoo','Jukurit':'jukurit',
+        'Tappara':'tappara','HIFK':'hifk','Lukko':'lukko','Pelicans':'pelicans',
+        'Ilves':'ilves','HPK':'hpk','JYP':'jyp','KalPa':'kalpa','Sport':'sport',
+        'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
+      } %}
+      <div class="lg-container">
+        <div class="lg-title">Goals Leaders</div>
+        <div class="lg-cards">
           {% for p in leaders %}
-          {% set tc = team_map.get(p.team, 'unknown') %}
-          <div class="ls-card">
-            <div class="ls-rank">#{{ p.rank }}</div>
-            {% if p.image_url %}<img class="ls-img" src="{{ p.image_url }}" alt="{{ p.name }}" onerror="this.style.display='none'">{% endif %}
-            <div class="ls-name">{{ p.name }}</div>
-            <span class="ls-team {{ tc }}">{{ p.team }}</span>
-            <div class="ls-stat">{{ p.value }}</div>
-            <div class="ls-gp">{{ p.games }} GP</div>
-            <div class="ls-gap">{{ p.gap }}</div>
-            <div class="ls-pos">{{ p.position }}</div>
-          </div>
+            {% set tc = team_map.get(p.team, 'default-team') %}
+            <div class="lg-card">
+              <div class="lg-team-bar {{ tc }}"></div>
+              <div class="lg-header">
+                <span class="lg-number">#{{ p.number if p.number else '?' }}</span>
+                <span>{{ p.team }}</span>
+              </div>
+              <div class="lg-img-wrap">
+                {% if p.image_url %}
+                  <img class="lg-img" src="{{ p.image_url }}" alt="{{ p.name }}"
+                       onerror="this.style.display='none';this.parentNode.style.background='#ccc'">
+                {% endif %}
+              </div>
+              <div class="lg-name">{{ p.name }}</div>
+              <div class="lg-pos">{{ p.position }}</div>
+              <div class="lg-stat">{{ p.value }}</div>
+              <div class="lg-gp">GP: {{ p.games }}</div>
+              <div class="lg-record">{{ p.gap }}</div>
+            </div>
           {% endfor %}
         </div>
+        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
       </div>
 
+  # ── Slide 3: Assists ─────────────────────────────────────────────────────
   - type: custom:html-template-card
+    title: Assists Leaders
     ignore_line_breaks: true
-    content: >
-      {% set sensor = states.sensor.liiga_assists_leaders %}
-      {% set leaders = sensor.attributes.leaders if sensor else [] %}
-      {% set team_map = {
-        'Kärpät': 'karpat',
-        'Tappara': 'tappara',
-        'HIFK': 'hifk',
-        'Lukko': 'lukko',
-        'Pelicans': 'pelicans',
-        'Ilves': 'ilves',
-        'HPK': 'hpk',
-        'JYP': 'jyp',
-        'KalPa': 'kalpa',
-        'Sport': 'sport',
-        'TPS': 'tps',
-        'KooKoo': 'kookoo',
-        'SaiPa': 'saipa',
-        'Ässät': 'assat',
-        'Jukurit': 'jukurit',
-        'Kespoo': 'kespoo'
-      } %}
+    content: |
       <style>
-        .ls-wrap { font-family: sans-serif; padding: 8px; }
-        .ls-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-text-color); }
-        .ls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
-        .ls-card { min-width: 0; background: #fff; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-        .ls-rank { font-size: 13px; color: #888; margin-bottom: 2px; }
-        .ls-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 4px auto; display: block; background: #eee; }
-        .ls-name { font-size: 15px; font-weight: bold; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ls-team { font-size: 12px; font-weight: bold; border-radius: 4px; padding: 2px 6px; display: inline-block; margin: 3px 0; }
-        .ls-stat { font-size: 28px; font-weight: bold; }
-        .ls-gp { font-size: 15px; color: #555; }
-        .ls-gap { font-size: 14px; color: #444; margin-top: 2px; }
-        .ls-pos { font-size: 12px; color: #888; }
-        .karpat { background: #009345; color: #fff; }
-        .tappara { background: #0066B1; color: #fff; }
-        .hifk { background: #E31E24; color: #fff; }
-        .lukko { background: #0072CE; color: #fff; }
-        .pelicans { background: #009FDF; color: #fff; }
-        .ilves { background: #FFDD00; color: #000; }
-        .hpk { background: #FF6600; color: #fff; }
-        .jyp { background: #000000; color: #fff; }
-        .kalpa { background: #FFDD00; color: #000; }
-        .sport { background: #E31937; color: #fff; }
-        .tps { background: #000000; color: #fff; }
-        .kookoo { background: #F7AF1D; color: #000; }
-        .saipa { background: #FFDD00; color: #000; }
-        .assat { background: #e4021b; color: #fff; }
-        .jukurit { background: #00B0CA; color: #fff; }
-        .kespoo { background: #003580; color: #fff; }
-        .unknown { background: #888; color: #fff; }
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: #fff; border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.1); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 5px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 14px; }
+        .lg-number { font-weight: bold; font-size: 16px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: #eee; overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 16px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1a1a1a; }
+        .lg-pos { text-align: center; color: #888; font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: #1a1a1a; }
+        .lg-gp { text-align: center; color: #666; font-size: 15px; }
+        .lg-record { text-align: center; color: #444; font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
       </style>
-      <div class="ls-wrap">
-        <div class="ls-title">Assists Leaders</div>
-        <div class="ls-grid">
+      {% set sensor = 'sensor.liiga_assists_leaders' %}
+      {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
+      {% set team_map = {
+        'Kärpät':'karpat','Ässät':'assat','K-Espoo':'kespoo','Jukurit':'jukurit',
+        'Tappara':'tappara','HIFK':'hifk','Lukko':'lukko','Pelicans':'pelicans',
+        'Ilves':'ilves','HPK':'hpk','JYP':'jyp','KalPa':'kalpa','Sport':'sport',
+        'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
+      } %}
+      <div class="lg-container">
+        <div class="lg-title">Assists Leaders</div>
+        <div class="lg-cards">
           {% for p in leaders %}
-          {% set tc = team_map.get(p.team, 'unknown') %}
-          <div class="ls-card">
-            <div class="ls-rank">#{{ p.rank }}</div>
-            {% if p.image_url %}<img class="ls-img" src="{{ p.image_url }}" alt="{{ p.name }}" onerror="this.style.display='none'">{% endif %}
-            <div class="ls-name">{{ p.name }}</div>
-            <span class="ls-team {{ tc }}">{{ p.team }}</span>
-            <div class="ls-stat">{{ p.value }}</div>
-            <div class="ls-gp">{{ p.games }} GP</div>
-            <div class="ls-gap">{{ p.gap }}</div>
-            <div class="ls-pos">{{ p.position }}</div>
-          </div>
+            {% set tc = team_map.get(p.team, 'default-team') %}
+            <div class="lg-card">
+              <div class="lg-team-bar {{ tc }}"></div>
+              <div class="lg-header">
+                <span class="lg-number">#{{ p.number if p.number else '?' }}</span>
+                <span>{{ p.team }}</span>
+              </div>
+              <div class="lg-img-wrap">
+                {% if p.image_url %}
+                  <img class="lg-img" src="{{ p.image_url }}" alt="{{ p.name }}"
+                       onerror="this.style.display='none';this.parentNode.style.background='#ccc'">
+                {% endif %}
+              </div>
+              <div class="lg-name">{{ p.name }}</div>
+              <div class="lg-pos">{{ p.position }}</div>
+              <div class="lg-stat">{{ p.value }}</div>
+              <div class="lg-gp">GP: {{ p.games }}</div>
+              <div class="lg-record">{{ p.gap }}</div>
+            </div>
           {% endfor %}
         </div>
+        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
       </div>
 
+  # ── Slide 4: Plus/Minus ──────────────────────────────────────────────────
   - type: custom:html-template-card
+    title: +/- Leaders
     ignore_line_breaks: true
-    content: >
-      {% set sensor = states.sensor.liiga_plus_minus_leaders %}
-      {% set leaders = sensor.attributes.leaders if sensor else [] %}
-      {% set team_map = {
-        'Kärpät': 'karpat',
-        'Tappara': 'tappara',
-        'HIFK': 'hifk',
-        'Lukko': 'lukko',
-        'Pelicans': 'pelicans',
-        'Ilves': 'ilves',
-        'HPK': 'hpk',
-        'JYP': 'jyp',
-        'KalPa': 'kalpa',
-        'Sport': 'sport',
-        'TPS': 'tps',
-        'KooKoo': 'kookoo',
-        'SaiPa': 'saipa',
-        'Ässät': 'assat',
-        'Jukurit': 'jukurit',
-        'Kespoo': 'kespoo'
-      } %}
+    content: |
       <style>
-        .ls-wrap { font-family: sans-serif; padding: 8px; }
-        .ls-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-text-color); }
-        .ls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
-        .ls-card { min-width: 0; background: #fff; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-        .ls-rank { font-size: 13px; color: #888; margin-bottom: 2px; }
-        .ls-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 4px auto; display: block; background: #eee; }
-        .ls-name { font-size: 15px; font-weight: bold; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ls-team { font-size: 12px; font-weight: bold; border-radius: 4px; padding: 2px 6px; display: inline-block; margin: 3px 0; }
-        .ls-stat { font-size: 28px; font-weight: bold; }
-        .ls-gp { font-size: 15px; color: #555; }
-        .ls-gap { font-size: 14px; color: #444; margin-top: 2px; }
-        .ls-pos { font-size: 12px; color: #888; }
-        .karpat { background: #009345; color: #fff; }
-        .tappara { background: #0066B1; color: #fff; }
-        .hifk { background: #E31E24; color: #fff; }
-        .lukko { background: #0072CE; color: #fff; }
-        .pelicans { background: #009FDF; color: #fff; }
-        .ilves { background: #FFDD00; color: #000; }
-        .hpk { background: #FF6600; color: #fff; }
-        .jyp { background: #000000; color: #fff; }
-        .kalpa { background: #FFDD00; color: #000; }
-        .sport { background: #E31937; color: #fff; }
-        .tps { background: #000000; color: #fff; }
-        .kookoo { background: #F7AF1D; color: #000; }
-        .saipa { background: #FFDD00; color: #000; }
-        .assat { background: #e4021b; color: #fff; }
-        .jukurit { background: #00B0CA; color: #fff; }
-        .kespoo { background: #003580; color: #fff; }
-        .unknown { background: #888; color: #fff; }
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: #fff; border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.1); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 5px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 14px; }
+        .lg-number { font-weight: bold; font-size: 16px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: #eee; overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 16px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1a1a1a; }
+        .lg-pos { text-align: center; color: #888; font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: #1a1a1a; }
+        .lg-gp { text-align: center; color: #666; font-size: 15px; }
+        .lg-record { text-align: center; color: #444; font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
       </style>
-      <div class="ls-wrap">
-        <div class="ls-title">+/- Leaders</div>
-        <div class="ls-grid">
+      {% set sensor = 'sensor.liiga_plus_minus_leaders' %}
+      {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
+      {% set team_map = {
+        'Kärpät':'karpat','Ässät':'assat','K-Espoo':'kespoo','Jukurit':'jukurit',
+        'Tappara':'tappara','HIFK':'hifk','Lukko':'lukko','Pelicans':'pelicans',
+        'Ilves':'ilves','HPK':'hpk','JYP':'jyp','KalPa':'kalpa','Sport':'sport',
+        'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
+      } %}
+      <div class="lg-container">
+        <div class="lg-title">+/- Leaders</div>
+        <div class="lg-cards">
           {% for p in leaders %}
-          {% set tc = team_map.get(p.team, 'unknown') %}
-          <div class="ls-card">
-            <div class="ls-rank">#{{ p.rank }}</div>
-            {% if p.image_url %}<img class="ls-img" src="{{ p.image_url }}" alt="{{ p.name }}" onerror="this.style.display='none'">{% endif %}
-            <div class="ls-name">{{ p.name }}</div>
-            <span class="ls-team {{ tc }}">{{ p.team }}</span>
-            <div class="ls-stat">{{ p.value }}</div>
-            <div class="ls-gp">{{ p.games }} GP</div>
-            <div class="ls-gap">{{ p.gap }}</div>
-            <div class="ls-pos">{{ p.position }}</div>
-          </div>
+            {% set tc = team_map.get(p.team, 'default-team') %}
+            <div class="lg-card">
+              <div class="lg-team-bar {{ tc }}"></div>
+              <div class="lg-header">
+                <span class="lg-number">#{{ p.number if p.number else '?' }}</span>
+                <span>{{ p.team }}</span>
+              </div>
+              <div class="lg-img-wrap">
+                {% if p.image_url %}
+                  <img class="lg-img" src="{{ p.image_url }}" alt="{{ p.name }}"
+                       onerror="this.style.display='none';this.parentNode.style.background='#ccc'">
+                {% endif %}
+              </div>
+              <div class="lg-name">{{ p.name }}</div>
+              <div class="lg-pos">{{ p.position }}</div>
+              <div class="lg-stat">{{ p.value }}</div>
+              <div class="lg-gp">GP: {{ p.games }}</div>
+              <div class="lg-record">{{ p.gap }}</div>
+            </div>
           {% endfor %}
         </div>
+        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
       </div>
 
+  # ── Slide 5: Power Play Goals ─────────────────────────────────────────────
   - type: custom:html-template-card
+    title: Power Play Goals Leaders
     ignore_line_breaks: true
-    content: >
-      {% set sensor = states.sensor.liiga_power_play_goals_leaders %}
-      {% set leaders = sensor.attributes.leaders if sensor else [] %}
-      {% set team_map = {
-        'Kärpät': 'karpat',
-        'Tappara': 'tappara',
-        'HIFK': 'hifk',
-        'Lukko': 'lukko',
-        'Pelicans': 'pelicans',
-        'Ilves': 'ilves',
-        'HPK': 'hpk',
-        'JYP': 'jyp',
-        'KalPa': 'kalpa',
-        'Sport': 'sport',
-        'TPS': 'tps',
-        'KooKoo': 'kookoo',
-        'SaiPa': 'saipa',
-        'Ässät': 'assat',
-        'Jukurit': 'jukurit',
-        'Kespoo': 'kespoo'
-      } %}
+    content: |
       <style>
-        .ls-wrap { font-family: sans-serif; padding: 8px; }
-        .ls-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: var(--primary-text-color); }
-        .ls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
-        .ls-card { min-width: 0; background: #fff; border-radius: 10px; padding: 10px 8px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-        .ls-rank { font-size: 13px; color: #888; margin-bottom: 2px; }
-        .ls-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 4px auto; display: block; background: #eee; }
-        .ls-name { font-size: 15px; font-weight: bold; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ls-team { font-size: 12px; font-weight: bold; border-radius: 4px; padding: 2px 6px; display: inline-block; margin: 3px 0; }
-        .ls-stat { font-size: 28px; font-weight: bold; }
-        .ls-gp { font-size: 15px; color: #555; }
-        .ls-gap { font-size: 14px; color: #444; margin-top: 2px; }
-        .ls-pos { font-size: 12px; color: #888; }
-        .karpat { background: #009345; color: #fff; }
-        .tappara { background: #0066B1; color: #fff; }
-        .hifk { background: #E31E24; color: #fff; }
-        .lukko { background: #0072CE; color: #fff; }
-        .pelicans { background: #009FDF; color: #fff; }
-        .ilves { background: #FFDD00; color: #000; }
-        .hpk { background: #FF6600; color: #fff; }
-        .jyp { background: #000000; color: #fff; }
-        .kalpa { background: #FFDD00; color: #000; }
-        .sport { background: #E31937; color: #fff; }
-        .tps { background: #000000; color: #fff; }
-        .kookoo { background: #F7AF1D; color: #000; }
-        .saipa { background: #FFDD00; color: #000; }
-        .assat { background: #e4021b; color: #fff; }
-        .jukurit { background: #00B0CA; color: #fff; }
-        .kespoo { background: #003580; color: #fff; }
-        .unknown { background: #888; color: #fff; }
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: #fff; border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.1); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 5px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 14px; }
+        .lg-number { font-weight: bold; font-size: 16px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: #eee; overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 16px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1a1a1a; }
+        .lg-pos { text-align: center; color: #888; font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: #1a1a1a; }
+        .lg-gp { text-align: center; color: #666; font-size: 15px; }
+        .lg-record { text-align: center; color: #444; font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
       </style>
-      <div class="ls-wrap">
-        <div class="ls-title">Power Play Goals Leaders</div>
-        <div class="ls-grid">
+      {% set sensor = 'sensor.liiga_power_play_goals_leaders' %}
+      {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
+      {% set team_map = {
+        'Kärpät':'karpat','Ässät':'assat','K-Espoo':'kespoo','Jukurit':'jukurit',
+        'Tappara':'tappara','HIFK':'hifk','Lukko':'lukko','Pelicans':'pelicans',
+        'Ilves':'ilves','HPK':'hpk','JYP':'jyp','KalPa':'kalpa','Sport':'sport',
+        'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
+      } %}
+      <div class="lg-container">
+        <div class="lg-title">Power Play Goals Leaders</div>
+        <div class="lg-cards">
           {% for p in leaders %}
-          {% set tc = team_map.get(p.team, 'unknown') %}
-          <div class="ls-card">
-            <div class="ls-rank">#{{ p.rank }}</div>
-            {% if p.image_url %}<img class="ls-img" src="{{ p.image_url }}" alt="{{ p.name }}" onerror="this.style.display='none'">{% endif %}
-            <div class="ls-name">{{ p.name }}</div>
-            <span class="ls-team {{ tc }}">{{ p.team }}</span>
-            <div class="ls-stat">{{ p.value }}</div>
-            <div class="ls-gp">{{ p.games }} GP</div>
-            <div class="ls-gap">{{ p.gap }}</div>
-            <div class="ls-pos">{{ p.position }}</div>
-          </div>
+            {% set tc = team_map.get(p.team, 'default-team') %}
+            <div class="lg-card">
+              <div class="lg-team-bar {{ tc }}"></div>
+              <div class="lg-header">
+                <span class="lg-number">#{{ p.number if p.number else '?' }}</span>
+                <span>{{ p.team }}</span>
+              </div>
+              <div class="lg-img-wrap">
+                {% if p.image_url %}
+                  <img class="lg-img" src="{{ p.image_url }}" alt="{{ p.name }}"
+                       onerror="this.style.display='none';this.parentNode.style.background='#ccc'">
+                {% endif %}
+              </div>
+              <div class="lg-name">{{ p.name }}</div>
+              <div class="lg-pos">{{ p.position }}</div>
+              <div class="lg-stat">{{ p.value }}</div>
+              <div class="lg-gp">GP: {{ p.games }}</div>
+              <div class="lg-record">{{ p.gap }}</div>
+            </div>
           {% endfor %}
         </div>
+        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
       </div>
