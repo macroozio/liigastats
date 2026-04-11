@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Liiga Player Statistics",
+        "description": "The API URL, season year, and tournament phase (regular season / playoffs) are computed automatically from the current date. You only need to choose which stat categories to track and how many players to show per leaderboard.\n\nAvailable categories: points, goals, assists, plusminus, powerplaygoals, shots, shotpercentage, xge, games, winninggoals",
+        "data": {
+          "categories": "Categories (comma separated)",
+          "top_n": "Number of players to show in each leaderboard"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to Liiga API",
+      "invalid_data": "Invalid data returned from API",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "Liiga Player Statistics is already configured"
+    }
+  }
+}
