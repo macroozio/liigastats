@@ -10,18 +10,18 @@ cards:
     content: |
       <style>
         .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
-        .lg-title { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-title { font-size: 32px; font-weight: bold; margin-top: 12px; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
         .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
         .lg-card { min-width: 0; background: var(--card-background-color); border-radius: 10px;
                    box-shadow: 0 2px 5px rgba(0,0,0,.2); overflow: hidden; display: flex;
                    flex-direction: column; padding-bottom: 10px; }
-        .lg-team-bar { width: 100%; height: 5px; }
+        .lg-team-bar { width: 100%; height: 6px; }
         .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
-                     justify-content: space-between; align-items: center; font-size: 14px; }
-        .lg-number { font-weight: bold; font-size: 16px; }
+                     justify-content: space-between; align-items: center; font-size: 16px; }
+        .lg-number { font-weight: bold; font-size: 20px; }
         .lg-img-wrap { width: 100%; aspect-ratio: 1; background: var(--secondary-background-color); overflow: hidden; }
         .lg-img { width: 100%; height: 100%; object-fit: cover; }
-        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 16px;
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 22px;
                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primary-text-color); }
         .lg-pos { text-align: center; color: var(--secondary-text-color); font-size: 12px; margin-top: -4px; }
         .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: var(--primary-text-color); }
