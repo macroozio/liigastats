@@ -72,7 +72,7 @@ cards:
             </div>
           {% endfor %}
         </div>
-        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
+        <div class="lg-updated">Updated: {{ (state_attr(sensor, 'last_updated') | as_datetime | as_local | strftime('%d %b %H:%M')) if state_attr(sensor, 'last_updated') else '—' }}</div>
       </div>
 
   # ── Slide 2: Goals ───────────────────────────────────────────────────────
@@ -112,7 +112,7 @@ cards:
             </div>
           {% endfor %}
         </div>
-        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
+        <div class="lg-updated">Updated: {{ (state_attr(sensor, 'last_updated') | as_datetime | as_local | strftime('%d %b %H:%M')) if state_attr(sensor, 'last_updated') else '—' }}</div>
       </div>
 
   # ── Slide 3: Assists ─────────────────────────────────────────────────────
@@ -152,7 +152,7 @@ cards:
             </div>
           {% endfor %}
         </div>
-        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
+        <div class="lg-updated">Updated: {{ (state_attr(sensor, 'last_updated') | as_datetime | as_local | strftime('%d %b %H:%M')) if state_attr(sensor, 'last_updated') else '—' }}</div>
       </div>
 
   # ── Slide 4: Plus/Minus ──────────────────────────────────────────────────
@@ -192,7 +192,7 @@ cards:
             </div>
           {% endfor %}
         </div>
-        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
+        <div class="lg-updated">Updated: {{ (state_attr(sensor, 'last_updated') | as_datetime | as_local | strftime('%d %b %H:%M')) if state_attr(sensor, 'last_updated') else '—' }}</div>
       </div>
 
   # ── Slide 5: Power Play Goals ─────────────────────────────────────────────
@@ -232,5 +232,5 @@ cards:
             </div>
           {% endfor %}
         </div>
-        <div class="lg-updated">Updated: {{ state_attr(sensor, 'last_updated') | default('—') }}</div>
+        <div class="lg-updated">Updated: {{ (state_attr(sensor, 'last_updated') | as_datetime | as_local | strftime('%d %b %H:%M')) if state_attr(sensor, 'last_updated') else '—' }}</div>
       </div>
