@@ -48,7 +48,7 @@ cards:
         'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
       } %}
       <div class="lg-container">
-        <div class="lg-title">Points Leaders</div>
+        <div class="lg-title">Pisteet</div>
         <div class="lg-cards">
           {% for p in leaders %}
             {% set tc = team_map.get(p.team, 'default-team') %}
@@ -88,7 +88,7 @@ cards:
         'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
       } %}
       <div class="lg-container">
-        <div class="lg-title">Goals Leaders</div>
+        <div class="lg-title">Maalit</div>
         <div class="lg-cards">
           {% for p in leaders %}
             {% set tc = team_map.get(p.team, 'default-team') %}
@@ -128,7 +128,7 @@ cards:
         'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
       } %}
       <div class="lg-container">
-        <div class="lg-title">Assists Leaders</div>
+        <div class="lg-title">Syötöt</div>
         <div class="lg-cards">
           {% for p in leaders %}
             {% set tc = team_map.get(p.team, 'default-team') %}
@@ -168,7 +168,7 @@ cards:
         'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
       } %}
       <div class="lg-container">
-        <div class="lg-title">+/- Leaders</div>
+        <div class="lg-title">Plus/Miinus</div>
         <div class="lg-cards">
           {% for p in leaders %}
             {% set tc = team_map.get(p.team, 'default-team') %}
@@ -208,7 +208,7 @@ cards:
         'TPS':'tps','KooKoo':'kookoo','SaiPa':'saipa'
       } %}
       <div class="lg-container">
-        <div class="lg-title">Power Play Goals Leaders</div>
+        <div class="lg-title">Ylivoimamaalit</div>
         <div class="lg-cards">
           {% for p in leaders %}
             {% set tc = team_map.get(p.team, 'default-team') %}

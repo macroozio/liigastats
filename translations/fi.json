@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Liiga Pelaajakentälliset tilastot",
+        "description": "API-osoite, kausivuosi ja turnausvaiheen (runkosarja / pudotuspelit) määritys lasketaan automaattisesti kuluvan päivämäärän perusteella. Sinun tarvitsee vain valita seurattavat tilastokategoriat ja kuinka monta pelaajaa näytetään kussakin tilastolistassa.\n\nSaatavilla olevat kategoriat: points, goals, assists, plusminus, powerplaygoals, shots, shotpercentage, xge, games, winninggoals",
+        "data": {
+          "categories": "Kategoriat (pilkulla eroteltuna)",
+          "top_n": "Pelaajien määrä kussakin tilastolistassa"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Yhteys Liiga API:in epäonnistui",
+      "invalid_data": "API palautti virheellistä dataa",
+      "unknown": "Odottamaton virhe"
+    },
+    "abort": {
+      "already_configured": "Liiga Pelaajakentälliset tilastot on jo määritetty"
+    }
+  }
+}
