@@ -79,6 +79,37 @@ cards:
   - type: custom:html-template-card
     ignore_line_breaks: true
     content: |
+      <style>
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 32px; font-weight: bold; margin-top: 12px; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: var(--card-background-color); border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.2); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 6px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 16px; }
+        .lg-number { font-weight: bold; font-size: 20px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: var(--secondary-background-color); overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 22px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primary-text-color); }
+        .lg-pos { text-align: center; color: var(--secondary-text-color); font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: var(--primary-text-color); }
+        .lg-gp { text-align: center; color: var(--secondary-text-color); font-size: 15px; }
+        .lg-record { text-align: center; color: var(--secondary-text-color); font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
+      </style>
       {% set sensor = 'sensor.liiga_goals_leaders' %}
       {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
       {% set team_map = {
@@ -119,6 +150,37 @@ cards:
   - type: custom:html-template-card
     ignore_line_breaks: true
     content: |
+      <style>
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 32px; font-weight: bold; margin-top: 12px; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: var(--card-background-color); border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.2); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 6px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 16px; }
+        .lg-number { font-weight: bold; font-size: 20px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: var(--secondary-background-color); overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 22px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primary-text-color); }
+        .lg-pos { text-align: center; color: var(--secondary-text-color); font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: var(--primary-text-color); }
+        .lg-gp { text-align: center; color: var(--secondary-text-color); font-size: 15px; }
+        .lg-record { text-align: center; color: var(--secondary-text-color); font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
+      </style>
       {% set sensor = 'sensor.liiga_assists_leaders' %}
       {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
       {% set team_map = {
@@ -159,6 +221,37 @@ cards:
   - type: custom:html-template-card
     ignore_line_breaks: true
     content: |
+      <style>
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 32px; font-weight: bold; margin-top: 12px; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: var(--card-background-color); border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.2); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 6px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 16px; }
+        .lg-number { font-weight: bold; font-size: 20px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: var(--secondary-background-color); overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 22px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primary-text-color); }
+        .lg-pos { text-align: center; color: var(--secondary-text-color); font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: var(--primary-text-color); }
+        .lg-gp { text-align: center; color: var(--secondary-text-color); font-size: 15px; }
+        .lg-record { text-align: center; color: var(--secondary-text-color); font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
+      </style>
       {% set sensor = 'sensor.liiga_plus_minus_leaders' %}
       {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
       {% set team_map = {
@@ -199,6 +292,37 @@ cards:
   - type: custom:html-template-card
     ignore_line_breaks: true
     content: |
+      <style>
+        .lg-container { font-family: Arial, sans-serif; max-width: 100%; margin: 0 auto; }
+        .lg-title { font-size: 32px; font-weight: bold; margin-top: 12px; margin-bottom: 12px; color: var(--primary-text-color); text-align: center; }
+        .lg-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .lg-card { min-width: 0; background: var(--card-background-color); border-radius: 10px;
+                   box-shadow: 0 2px 5px rgba(0,0,0,.2); overflow: hidden; display: flex;
+                   flex-direction: column; padding-bottom: 10px; }
+        .lg-team-bar { width: 100%; height: 6px; }
+        .lg-header { background: #222; color: #fff; padding: 6px 8px; display: flex;
+                     justify-content: space-between; align-items: center; font-size: 16px; }
+        .lg-number { font-weight: bold; font-size: 20px; }
+        .lg-img-wrap { width: 100%; aspect-ratio: 1; background: var(--secondary-background-color); overflow: hidden; }
+        .lg-img { width: 100%; height: 100%; object-fit: cover; }
+        .lg-name { font-weight: bold; text-align: center; padding: 6px 4px; font-size: 22px;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--primary-text-color); }
+        .lg-pos { text-align: center; color: var(--secondary-text-color); font-size: 12px; margin-top: -4px; }
+        .lg-stat { text-align: center; font-size: 28px; font-weight: bold; margin: 8px 0; color: var(--primary-text-color); }
+        .lg-gp { text-align: center; color: var(--secondary-text-color); font-size: 15px; }
+        .lg-record { text-align: center; color: var(--secondary-text-color); font-size: 14px; margin-top: 2px; }
+        .lg-updated { text-align: right; font-size: 11px; color: var(--secondary-text-color); margin-top: 10px; font-style: italic; }
+        .karpat   { background: #009345; } .tappara  { background: #0066B1; }
+        .hifk     { background: #E31E24; } .lukko    { background: #0072CE; }
+        .pelicans { background: #009FDF; } .ilves    { background: #FFDD00; }
+        .hpk      { background: #FF6600; } .jyp      { background: #000000; }
+        .kalpa    { background: #FFDD00; } .sport    { background: #E31937; }
+        .tps      { background: #000000; } .kookoo   { background: #F7AF1D; }
+        .saipa    { background: #FFDD00; } .assat    { background: #e4021b; }
+        .jukurit  { background: #00B0CA; } .kespoo   { background: #003580; }
+        .default-team { background: #333; }
+        @media (max-width: 480px) { .lg-stat { font-size: 18px; } }
+      </style>
       {% set sensor = 'sensor.liiga_player_power_play_goals_leaders' %}
       {% set leaders = state_attr(sensor, 'leaders') | default([]) %}
       {% set team_map = {
